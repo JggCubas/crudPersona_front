@@ -1,0 +1,164 @@
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-8">
+      <button type="button"  class="btn btn-primary" (click)="viewPop()">Nuevo Registro</button>
+    </div>
+    <div class="col-8">
+
+
+      <div class="mat-elevation-z8" #TABLE>
+        <table  #myTable matSort mat-table [dataSource]="dataSource" width ="100%">
+          <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header width ="10%"> </th>
+              <td mat-cell *matCellDef="let element" >
+                <a (click)="edit(element)">
+
+                  <fa-icon [icon]="['fas', 'pen']"></fa-icon>
+
+                </a> |
+                <a (click)="remove(element)">
+
+                  <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+
+                </a>
+
+             </td>
+
+          </ng-container>
+
+            <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="10%"> Nombre </th>
+                <td mat-cell *matCellDef="let element" > {{element.Nombre}} </td>
+
+            </ng-container>
+            <ng-container matColumnDef="ape_pat">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="10%"> Paterno </th>
+                <td mat-cell *matCellDef="let element" > {{element.Ape_Pat}} </td>
+
+            </ng-container>
+            <ng-container matColumnDef="ape_mat">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="10%"> Materno </th>
+                <td mat-cell *matCellDef="let element" > {{element.Ape_Mat}} </td>
+
+            </ng-container>
+            <ng-container matColumnDef="rfc">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="15%"> RFC </th>
+                <td mat-cell *matCellDef="let element" > {{element.Rfc}} </td>
+            </ng-container>
+            <ng-container matColumnDef="curp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="15%"> CURP </th>
+                <td mat-cell *matCellDef="let element" > {{element.Curp}} </td>
+            </ng-container>
+            <ng-container matColumnDef="fecha_nacimiento">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="20%"> Fecha Nacimiento </th>
+                <td mat-cell *matCellDef="let element" > {{element.Fecha_Nacimiento}} </td>
+            </ng-container>
+            <ng-container matColumnDef="fecha_alta">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="20%">  Alta </th>
+                <td mat-cell *matCellDef="let element" > {{element.Fecha_Alta}} </td>
+            </ng-container>
+            <ng-container matColumnDef="fecha_modificacion">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="20%"> Modificacion </th>
+                <td mat-cell *matCellDef="let element" > {{element.Fecha_Modificacion}} </td>
+            </ng-container>
+            <ng-container matColumnDef="estatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="20%"> Estatus </th>
+                <td mat-cell *matCellDef="let element" > {{element.Estatus_Id}} </td>
+            </ng-container>
+            <ng-container matColumnDef="sexo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="20%"> Sexo </th>
+                <td mat-cell *matCellDef="let element" > {{element.Sexo_id}} </td>
+            </ng-container>
+            <ng-container matColumnDef="persona_tipo_id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="20%"> Tipo </th>
+                <td mat-cell *matCellDef="let element" > {{element.Persona_Tipo_id}} </td>
+            </ng-container>
+            <ng-container matColumnDef="avatar">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header width ="20%"> Avatar </th>
+                <td mat-cell *matCellDef="let element" > {{element.Avatar}} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+
+        </table>
+      </div>
+
+
+
+  </div>
+</div>
+
+<div class="overlay" [ngStyle]="{'display': display}"></div>
+<div class="modal col-12" [ngStyle]="{'display': display}" tabindex="-1" role="dialog">
+  <div class="modal-dialog col-10" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Persona</h5>
+
+          <fa-icon (click)="closeModal()" [icon]="['far', 'rectangle-xmark']" size="2x"></fa-icon>
+
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center">
+          <div class="col-8">
+            <div class="form-group " [formGroup]="form_personas">
+
+              <div class="input-group mb-3">
+                <span class="input-group-text" style="width: 150px;" id="basic-addon2">Nombre</span>
+                <input type="text" class="form-control" formControlName="Nombre">
+                <div *ngIf="submitted && f.Nombre.errors" class="invalid-feedback">
+                  <div *ngIf="f.Nombre.errors.required">Fullname is required</div>
+                </div>
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text" style="width: 150px;" id="basic-addon2">Apellido paterno</span>
+                <input type="text" class="form-control" formControlName="Ape_Pat">
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text" style="width: 150px;" id="basic-addon2">Apellido materno</span>
+                <input type="text" class="form-control" formControlName="Ape_Mat">
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text" style="width: 150px;" id="basic-addon2">Rfc</span>
+                <input type="text" class="form-control" formControlName="Rfc">
+              </div>
+              <div class="input-group mb-3">
+                <span class="input-group-text" style="width: 150px;" id="basic-addon2">Curp</span>
+                <input type="text" class="form-control" formControlName="Curp">
+              </div>
+              <!--
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" style="width: 150px;" id="basic-addon2">Edad</span>
+                    <input type="text" class="form-control" placeholder="edad" [(ngModel)]="newPersona.edad">
+                  </div>
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" style="width: 150px;" id="basic-addon2">Sexo</span>
+                    <select class="form-select" [(ngModel)]="newPersona.sexo">
+                      <option selected disabled>...</option>
+                      <option value="Hombre">Hombre</option>
+                      <option value="Mujer">Mujer</option>
+                    </select>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="formFile" class="form-label">Documento</label>
+                    <input class="form-control" type="file" id="formFile" (change)="onFileSelected($event)">
+                  </div> -->
+
+
+
+          </div>
+        </div>
+        </div>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="saveNewPersona()">Guardar</button>
+        <button class="btn btn-secondary" data-dismiss="modal"    (click)="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

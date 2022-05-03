@@ -1,0 +1,27 @@
+/* You can add global styles to this file, and also import other style files */
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+.overlay{
+    background-color: rgba(0,0,0, 0.5) !important;
+    position:fixed !important;
+    top:0 !important;
+    z-index: 9999;
+    left:0 !important;
+    width: 100% !important;
+    height: 100%;
+}
+
+
+div.modal {
+    height: 80%;
+    z-index: 99999;
+    color: #000;
+    animation:movercaja 0.4s ease-out forwards;
+    top:10%;
+}
+div.modal > .modal-dialog{
+  max-width: 60%;
+}
+div.modal > .modal-dialog > .modal-content > .modal-body{
+  max-height: 450px;overflow-y: scroll;
+}
