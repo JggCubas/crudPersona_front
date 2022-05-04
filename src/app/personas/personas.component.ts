@@ -72,6 +72,7 @@ export class PersonasComponent implements OnInit {
   editPersona = false;
   submitted = false;
   form_personas : FormGroup;
+   filePath: string = "";
   constructor(public objpeticiones_service: peticiones_service,library: FaIconLibrary,private formBuilder: FormBuilder,private dateAdapter: DateAdapter<Date>,private datePipe: DatePipe) {
     library.addIcons(faPen,faTrash,faRectangleXmark);
     this.dateAdapter.setLocale('Es-es');
@@ -81,7 +82,7 @@ export class PersonasComponent implements OnInit {
         Nombre : ['',Validators.required],
         Ape_Pat : ['',Validators.required],
         Ape_Mat : [''],
-        Rfc : ['',Validators.required],
+        Rfc : ['',[Validators.required,Validators.maxLength(12), Validators.minLength(12)]],
         Curp : ['',Validators.required],
         Fecha_Nacimiento : [''],
         Fecha_Alta : [''],
@@ -143,10 +144,6 @@ export class PersonasComponent implements OnInit {
     }
     this.display = 'none';
   }
-  onFileSelected(event: any):void {
-     // var selectedFile = event.target.files[0];
-     // this.newPersona.documento =  selectedFile.name;
-    }
   remove(row_obj:any){
     this.objpeticiones_service.removePersona(row_obj.Id).subscribe((result)=>{
       this.dataSource.data = this.dataSource.data.filter((value,key)=>{
@@ -155,5 +152,23 @@ export class PersonasComponent implements OnInit {
     });
   }
 
+  imagePreview(e : any):void {
+    if(e != null){
+      const element = (e.target.value as HTMLInputElement) ;
+      const file = element!.files[0]!;
+
+      // this.myForm.patchValue({
+      //   img: file
+      // });
+      //
+      // this.myForm.get('img').updateValueAndValidity()
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.filePath = reader.result as string;
+      }
+      reader.readAsDataURL(file!)
+    }
+    }
 
 }

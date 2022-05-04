@@ -106,6 +106,18 @@
             <div class="form-group " [formGroup]="form_personas">
               <div class="row">
                 <div class="col-12">
+                  <div *ngIf="filePath && filePath !== ''">
+                    <img [src]="filePath">
+                  </div>
+
+                  <input type="file" accept="image/*" (change)="imagePreview($event)" />
+                  <div class="text-center">
+                    <img src="..." class="rounded" alt="...">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
                   <div class="mb-3">
                     <div class="input-group ">
                         <span class="input-group-text" style="width: 180px;" id="basic-addon2">Nombre</span>
@@ -142,6 +154,7 @@
                   </div>
                   <div *ngIf="submitted && form_personas.controls['Rfc'].errors">
                     <small class="text-danger" *ngIf="form_personas.controls['Rfc'].errors['required']">*Campo requerido</small>
+                    <small class="text-danger" *ngIf="form_personas.controls['Rfc'].errors['max']">*Campo maximo de 12</small>
                   </div>
                 </div>
                 <div class="col-6 mb-3">
@@ -202,28 +215,6 @@
                   </div>
                 </div>
               </div>
-
-              <!--
-                  <div class="input-group mb-3">
-                    <span class="input-group-text" style="width: 150px;" id="basic-addon2">Edad</span>
-                    <input type="text" class="form-control" placeholder="edad" [(ngModel)]="newPersona.edad">
-                  </div>
-                  <div class="input-group mb-3">
-                    <span class="input-group-text" style="width: 150px;" id="basic-addon2">Sexo</span>
-                    <select class="form-select" [(ngModel)]="newPersona.sexo">
-                      <option selected disabled>...</option>
-                      <option value="Hombre">Hombre</option>
-                      <option value="Mujer">Mujer</option>
-                    </select>
-                  </div>
-
-                  <div class="mb-3">
-                    <label for="formFile" class="form-label">Documento</label>
-                    <input class="form-control" type="file" id="formFile" (change)="onFileSelected($event)">
-                  </div> -->
-
-
-
           </div>
         </div>
         </div>
