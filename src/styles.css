@@ -27,5 +27,5 @@ div.modal > .modal-dialog{
   max-width: 80%;
 }
 div.modal > .modal-dialog > .modal-content > .modal-body{
-  max-height: 450px;overflow-y: scroll;
+  max-height: 600px;overflow-y: scroll;
 }
