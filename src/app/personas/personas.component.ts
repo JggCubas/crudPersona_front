@@ -145,6 +145,7 @@ export class PersonasComponent implements OnInit {
     this.form_personas.reset();
     this.editPersona = false;
     this.display = 'block';
+    this.filePath = "";
   }//Endfuncion
   saveNewPersona(){
     this.submitted = true;
