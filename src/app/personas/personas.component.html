@@ -90,7 +90,27 @@
   </div>
 </div>
 
-<div class="overlay" [ngStyle]="{'display': display}"></div>
+<div class="overlay" [ngStyle]="{'display': display }"></div>
+<div class="overlay" [ngStyle]="{'display': displayRemove }"></div>
+<div class="modal modalRemove col-12" [ngStyle]="{'display': displayRemove}" tabindex="-1" role="dialog">
+  <div class="modal-dialog col-10" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Eliminar Persona</h5>
+
+          <fa-icon (click)="closeModal()" [icon]="['far', 'rectangle-xmark']" size="2x"></fa-icon>
+
+      </div>
+      <div class="modal-body">
+        <span>Confirme que desea eliminar a la persona: {{f['Nombre'].value}} {{f['Ape_Pat'].value}} {{f['Ape_Mat'].value}}</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="confirmRemovePersona()">Borrar</button>
+        <button class="btn btn-secondary" data-dismiss="modal"    (click)="closeModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal col-12" [ngStyle]="{'display': display}" tabindex="-1" role="dialog">
   <div class="modal-dialog col-10" role="document">
     <div class="modal-content">
@@ -105,116 +125,123 @@
           <div class="col-10">
             <div class="form-group " [formGroup]="form_personas">
               <div class="row">
-                <div class="col-12">
-                  <div *ngIf="filePath && filePath !== ''">
-                    <img [src]="filePath">
-                  </div>
+                <div class="col-5 text-center">
+                  <div class="card" style="width: 100%;">
+                      <div *ngIf="filePath && filePath !== ''" class="text-center">
+                        <img  [src]="filePath" class="img-fluid" width="50%"/>
+                      </div>
+                      <div class="card-body">
+                        <div class="mb-5">
+                          <label for="Image" class="form-label">Avatar</label>
+                          <input class="form-control" type="file" id="formFile" (change)="selectFile($event)" >
+                        </div>
 
-                  <input type="file" accept="image/*" (change)="imagePreview($event)" />
-                  <div class="text-center">
-                    <img src="..." class="rounded" alt="...">
+                      </div>
                   </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <div class="mb-3">
-                    <div class="input-group ">
-                        <span class="input-group-text" style="width: 180px;" id="basic-addon2">Nombre</span>
-                        <input type="text"  formControlName="Nombre" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Nombre'].errors}">
+                <div class="col-7">
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="mb-3">
+                        <div class="input-group ">
+                            <span class="input-group-text" style="width: 180px;" id="basic-addon2">Nombre</span>
+                            <input type="text"  formControlName="Nombre" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Nombre'].errors}">
+                        </div>
+                        <div *ngIf="submitted && form_personas.controls['Nombre'].errors">
+                          <small class="text-danger" *ngIf="form_personas.controls['Nombre'].errors['required']">*Campo requerido</small>
+                        </div>
+                      </div>
                     </div>
-                    <div *ngIf="submitted && form_personas.controls['Nombre'].errors">
-                      <small class="text-danger" *ngIf="form_personas.controls['Nombre'].errors['required']">*Campo requerido</small>
+
+
+                    <div class="col-12 mb-3">
+                      <div class="input-group">
+                        <span class="input-group-text" style="width: 180px;" id="basic-addon2">Apellido paterno</span>
+                        <input type="text"  formControlName="Ape_Pat" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Ape_Pat'].errors}">
+                      </div>
+                      <div *ngIf="submitted && form_personas.controls['Ape_Pat'].errors">
+                        <small class="text-danger" *ngIf="form_personas.controls['Ape_Pat'].errors['required']">*Campo requerido</small>
+                      </div>
                     </div>
-                  </div>
+                    <div class="col-12 mb-3">
+                      <div class="input-group">
+                        <span class="input-group-text" style="width: 180px;" id="basic-addon2">Apellido materno</span>
+                        <input type="text" class="form-control" formControlName="Ape_Mat">
+                      </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                      <div class="input-group ">
+                        <span class="input-group-text" style="width: 180px;" id="basic-addon2">Rfc</span>
+                        <input type="text" formControlName="Rfc" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Rfc'].errors}">
+                      </div>
+                      <div *ngIf="submitted && form_personas.controls['Rfc'].errors">
+                        <small class="text-danger" *ngIf="form_personas.controls['Rfc'].errors['required']">*Campo requerido</small>
+                        <small class="text-danger" *ngIf="f['Rfc']!.errors!['maxlength']! || f['Rfc']!.errors!['minlength']!">*Campo obligatorio de 13 caracteres</small>
+                      </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                      <div class="input-group ">
+                        <span class="input-group-text" style="width: 180px;" id="basic-addon2">Curp</span>
+                        <input type="text"  formControlName="Curp" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Curp'].errors}">
+                      </div>
+                      <div *ngIf="submitted && form_personas.controls['Curp'].errors">
+                        <small class="text-danger" *ngIf="form_personas.controls['Curp'].errors['required']">*Campo requerido</small>
+                        <small class="text-danger" *ngIf="f['Curp']!.errors!['maxlength']! || f['Curp']!.errors!['minlength']!">*Campo obligatorio de 18 caracteres</small>
+                      </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                      <div class="input-group">
+                        <span class="input-group-text" style="width: 180x;" id="basic-addon2">Fecha de nacimiento</span>
+                        <input mat-input  formControlName="Fecha_Nacimiento" [ngClass]="{'form-control':true}" [matDatepicker]="picker">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                      </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                      <div class="input-group">
+                        <span class="input-group-text"  style="width: 180x;" >Sexo</span>
+                          <mat-select  class="form-control" formControlName="Sexo_id" >
+                                <mat-option *ngFor="let sex of selectSexo" [value]="sex.id" >
+                                    {{sex.label}}
+                                </mat-option>
+                          </mat-select>
+                      </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                      <div class="input-group">
+                        <span class="input-group-text"  style="width: 180x;" >Estatus</span>
+                          <mat-select formControlName="Estatus_Id" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Estatus_Id'].errors}">
+                                <mat-option *ngFor="let estatus of selectEstatus" [value]="estatus.id" >
+                                    {{estatus.label}}
+                                </mat-option>
+                          </mat-select>
+                      </div>
+                      <div *ngIf="submitted && form_personas.controls['Estatus_Id'].errors">
+                        <small class="text-danger" *ngIf="form_personas.controls['Estatus_Id'].errors['required']">*Campo requerido</small>
+                      </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                      <div class="input-group">
+                        <span class="input-group-text"  style="width: 180x;" >Tipo de persona</span>
+                          <mat-select  formControlName="Persona_Tipo_id"  [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Persona_Tipo_id'].errors}">
+                                <mat-option *ngFor="let tipo of selectTipo" [value]="tipo.id" >
+                                    {{tipo.label}}
+                                </mat-option>
+                          </mat-select>
+                      </div>
+                      <div *ngIf="submitted && form_personas.controls['Persona_Tipo_id'].errors">
+                        <small class="text-danger" *ngIf="form_personas.controls['Persona_Tipo_id'].errors['required']">*Campo requerido</small>
+                      </div>
+                    </div>
+
+
+
+
                 </div>
               </div>
-              <div class="row">
-                <div class="col-6 mb-3">
-                  <div class="input-group">
-                    <span class="input-group-text" style="width: 180px;" id="basic-addon2">Apellido paterno</span>
-                    <input type="text"  formControlName="Ape_Pat" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Ape_Pat'].errors}">
-                  </div>
-                  <div *ngIf="submitted && form_personas.controls['Ape_Pat'].errors">
-                    <small class="text-danger" *ngIf="form_personas.controls['Ape_Pat'].errors['required']">*Campo requerido</small>
-                  </div>
-                </div>
-                <div class="col-6 mb-3">
-                  <div class="input-group">
-                    <span class="input-group-text" style="width: 180px;" id="basic-addon2">Apellido materno</span>
-                    <input type="text" class="form-control" formControlName="Ape_Mat">
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-6 mb-3">
-                  <div class="input-group ">
-                    <span class="input-group-text" style="width: 180px;" id="basic-addon2">Rfc</span>
-                    <input type="text" formControlName="Rfc" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Rfc'].errors}">
-                  </div>
-                  <div *ngIf="submitted && form_personas.controls['Rfc'].errors">
-                    <small class="text-danger" *ngIf="form_personas.controls['Rfc'].errors['required']">*Campo requerido</small>
-                    <small class="text-danger" *ngIf="form_personas.controls['Rfc'].errors['max']">*Campo maximo de 12</small>
-                  </div>
-                </div>
-                <div class="col-6 mb-3">
-                  <div class="input-group ">
-                    <span class="input-group-text" style="width: 180px;" id="basic-addon2">Curp</span>
-                    <input type="text"  formControlName="Curp" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Curp'].errors}">
-                  </div>
-                  <div *ngIf="submitted && form_personas.controls['Curp'].errors">
-                    <small class="text-danger" *ngIf="form_personas.controls['Curp'].errors['required']">*Campo requerido</small>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-6 mb-3">
-                  <div class="input-group">
-                    <span class="input-group-text" style="width: 180x;" id="basic-addon2">Fecha de nacimiento</span>
-                    <input mat-input  formControlName="Fecha_Nacimiento" [ngClass]="{'form-control':true}" [matDatepicker]="picker">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                  </div>
-                </div>
-                <div class="col-6 mb-3">
-                  <div class="input-group">
-                    <span class="input-group-text"  style="width: 180x;" >Sexo</span>
-                      <mat-select  class="form-control" formControlName="Sexo_id" >
-                            <mat-option *ngFor="let sex of selectSexo" [value]="sex.id" >
-                                {{sex.label}}
-                            </mat-option>
-                      </mat-select>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-6 mb-3">
-                  <div class="input-group">
-                    <span class="input-group-text"  style="width: 180x;" >Estatus</span>
-                      <mat-select formControlName="Estatus_Id" [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Estatus_Id'].errors}">
-                            <mat-option *ngFor="let estatus of selectEstatus" [value]="estatus.id" >
-                                {{estatus.label}}
-                            </mat-option>
-                      </mat-select>
-                  </div>
-                  <div *ngIf="submitted && form_personas.controls['Estatus_Id'].errors">
-                    <small class="text-danger" *ngIf="form_personas.controls['Estatus_Id'].errors['required']">*Campo requerido</small>
-                  </div>
-                </div>
-                <div class="col-6 mb-3">
-                  <div class="input-group">
-                    <span class="input-group-text"  style="width: 180x;" >Tipo de persona</span>
-                      <mat-select  formControlName="Persona_Tipo_id"  [ngClass]="{'form-control':true,'is-invalid':submitted && form_personas.controls['Persona_Tipo_id'].errors}">
-                            <mat-option *ngFor="let tipo of selectTipo" [value]="tipo.id" >
-                                {{tipo.label}}
-                            </mat-option>
-                      </mat-select>
-                  </div>
-                  <div *ngIf="submitted && form_personas.controls['Persona_Tipo_id'].errors">
-                    <small class="text-danger" *ngIf="form_personas.controls['Persona_Tipo_id'].errors['required']">*Campo requerido</small>
-                  </div>
-                </div>
-              </div>
+
+
+
           </div>
         </div>
         </div>

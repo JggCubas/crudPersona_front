@@ -12,6 +12,9 @@
     height: 100%;
 }
 
+div.modalRemove > .modal-dialog{
+  max-width: 40%!important;
+}
 
 div.modal {
     height: 95%;

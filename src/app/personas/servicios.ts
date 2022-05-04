@@ -8,10 +8,12 @@ import { HttpClient, HttpHeaders, HttpErrorResponse, HttpParams, HttpRequest, Ht
 
 export class peticiones_service {
   private path = [
-        'http://localhost:8080/personas'
+        'http://localhost:8080/personas',
+        'http://localhost:8080/personas/uploadfile',
+        'http://localhost:8080/personas/getAvatar',
   ];
   constructor(private http: HttpClient) {}
-
+  getPath():string{return this.path[2];}
   getListPersonas():Observable<any>{
     return this.http.get<any>(this.path[0], {  })
       .pipe(
@@ -36,6 +38,18 @@ export class peticiones_service {
         catchError(this.error)
       );
   }//End_function
+  uploadFile( file: File): Observable<any> {
+    let formData = new FormData();
+    formData.append('upload',file, file.name);
+
+    let params = new HttpParams();
+    const options = {
+      params: params,
+      reportProgress: true,
+    };
+    const req = new HttpRequest('POST', this.path[1], formData, options);
+    return this.http.request(req);
+  }//Endfuncion
   error(error: HttpErrorResponse) {
     let errorMessage = '';
     if (error.error instanceof ErrorEvent) {

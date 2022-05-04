@@ -69,10 +69,14 @@ export class PersonasComponent implements OnInit {
   selectEstatus = [{'id':1,'label':'Activo'},{'id':2,'label':'Inactivo'}];
   selectTipo = [{'id':1,'label':'Fisica'},{'id':2,'label':'moral'}];
   display = 'none';
+  displayRemove = 'none';
+  nombreRemove = "";
   editPersona = false;
   submitted = false;
   form_personas : FormGroup;
-   filePath: string = "";
+  fileUpload? : File;
+  filePath? : string;
+  reader = new FileReader();
   constructor(public objpeticiones_service: peticiones_service,library: FaIconLibrary,private formBuilder: FormBuilder,private dateAdapter: DateAdapter<Date>,private datePipe: DatePipe) {
     library.addIcons(faPen,faTrash,faRectangleXmark);
     this.dateAdapter.setLocale('Es-es');
@@ -82,8 +86,8 @@ export class PersonasComponent implements OnInit {
         Nombre : ['',Validators.required],
         Ape_Pat : ['',Validators.required],
         Ape_Mat : [''],
-        Rfc : ['',[Validators.required,Validators.maxLength(12), Validators.minLength(12)]],
-        Curp : ['',Validators.required],
+        Rfc : ['',[Validators.required,Validators.maxLength(13), Validators.minLength(13)]],
+        Curp : ['',[Validators.required,Validators.maxLength(18), Validators.minLength(18)]],
         Fecha_Nacimiento : [''],
         Fecha_Alta : [''],
         Fecha_Modificacion : [''],
@@ -98,8 +102,26 @@ export class PersonasComponent implements OnInit {
   @ViewChild(MatSort, {static: true}) sort!: MatSort;
   ngOnInit(): void {
     this.getList();
+    this.reader.onload = (_event) => {
+      this.filePath = this.reader.result as string;
+    }
+  }
+  selectFile(event: any) { //Angular 11, for stricter type
+    if(!event.target.files[0] || event.target.files[0].length == 0) {
+      return;
+    }
+    const mimeType = event.target.files[0].type;
+
+    if (mimeType.match(/image\/*/) == null) {
+      return;
+    }
+
+
+    this.reader.readAsDataURL(event.target.files[0]);
+    this.fileUpload = event.target.files[0];
 
   }
+
   getList(){
     this.objpeticiones_service.getListPersonas().subscribe((data)=>{
       this.dataSource = new MatTableDataSource<Personas>(data);
@@ -108,12 +130,15 @@ export class PersonasComponent implements OnInit {
   }
   closeModal() {
     this.display = 'none';
+    this.displayRemove = 'none';
   }
   edit(row_obj:any){
     this.submitted = false;
     this.editPersona = true;
+    this.filePath = "";
     this.form_personas.setValue(row_obj);
     this.display = 'block';
+    this.filePath = this.objpeticiones_service.getPath()+'/'+this.form_personas.value.Avatar;
   }
   viewPop(){
     this.submitted = false;
@@ -127,48 +152,60 @@ export class PersonasComponent implements OnInit {
 
     let data = this.dataSource.data;
     if(this.editPersona){
-      this.form_personas.value.Fecha_Nacimiento = this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, 'yyyy-MM-dd');
-      let resource = this.form_personas.value;
-      this.objpeticiones_service.updatePersona(resource.Id,resource).subscribe((result)=>{
+      this.objpeticiones_service.uploadFile(this.fileUpload!).subscribe((url)=>{
+        if(typeof url['body'] !== 'undefined' ){
+          this.form_personas.patchValue({
+            Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, 'yyyy-MM-dd')
+          });
+          this.form_personas.patchValue({
+            Avatar: url['body']['ruta']
+          });
+          let resource = this.form_personas.value;
+          this.objpeticiones_service.updatePersona(resource.Id,resource).subscribe((result)=>{
+            this.dataSource.data[this.dataSource.data.findIndex(item => item.Id == result.Id)] = result;
+            this.dataSource.data = this.dataSource.data;
+          });
+        }
 
-        this.dataSource.data[this.dataSource.data.findIndex(item => item.Id == result.Id)] = result;
-        this.dataSource.data = this.dataSource.data;
       });
     }else{
-      this.form_personas.value.Fecha_Nacimiento = this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, 'yyyy-MM-dd');
-      let resource = this.form_personas.value;
-      this.objpeticiones_service.setNewPersona(resource).subscribe((result)=>{
-        data.push(result);
-        this.dataSource.data = data;
+      this.objpeticiones_service.uploadFile(this.fileUpload!).subscribe((url)=>{
+        if(typeof url['body'] !== 'undefined' ){
+          this.form_personas.patchValue({
+            Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, 'yyyy-MM-dd')
+          });
+          this.form_personas.patchValue({
+            Avatar: url['body']['ruta']
+          });
+          let resource = this.form_personas.value;
+          this.objpeticiones_service.setNewPersona(resource).subscribe((result)=>{
+            data.push(result);
+            this.dataSource.data = data;
+          });
+        }
       });
     }
     this.display = 'none';
   }
-  remove(row_obj:any){
-    this.objpeticiones_service.removePersona(row_obj.Id).subscribe((result)=>{
+  confirmRemovePersona(){
+    this.objpeticiones_service.removePersona(this.form_personas.value.Id).subscribe((result)=>{
       this.dataSource.data = this.dataSource.data.filter((value,key)=>{
-       return value.Id != row_obj.Id;
+       return value.Id != this.form_personas.value.Id;
       });
+      this.display = 'none';
+      this.displayRemove = 'none';
+      this.form_personas.reset();
     });
   }
+  remove(row_obj:any){
+    this.displayRemove = 'block';
+    this.nombreRemove = row_obj;
+    this.form_personas.setValue(row_obj);
+  }
 
-  imagePreview(e : any):void {
-    if(e != null){
-      const element = (e.target.value as HTMLInputElement) ;
-      const file = element!.files[0]!;
+  get f() {
+     return this.form_personas.controls;
+  }
 
-      // this.myForm.patchValue({
-      //   img: file
-      // });
-      //
-      // this.myForm.get('img').updateValueAndValidity()
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.filePath = reader.result as string;
-      }
-      reader.readAsDataURL(file!)
-    }
-    }
 
 }
