@@ -21,11 +21,11 @@ div.modal {
     z-index: 999;
     color: #000;
     animation:movercaja 0.4s ease-out forwards;
-    top:10%;
+
 }
 div.modal > .modal-dialog{
   max-width: 80%;
 }
 div.modal > .modal-dialog > .modal-content > .modal-body{
-  max-height: 600px;overflow-y: scroll;
+  max-height: 450px;overflow-y: scroll;
 }

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>example-mysourcing documentation</title>
+        <title>crudPersona_front documentation</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -14,7 +14,7 @@
     <body>
 
         <div class="navbar navbar-default navbar-fixed-top visible-xs">
-            <a href="../" class="navbar-brand">example-mysourcing documentation</a>
+            <a href="../" class="navbar-brand">crudPersona_front documentation</a>
             <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
         </div>
 
@@ -69,6 +69,13 @@
         </p>
 
 
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Interzas que define ls estructura de los datos a manejar</p>
+
+            </p>
 
 
         <section>
@@ -622,6 +629,7 @@ import {FaIconLibrary} from &#x27;@fortawesome/angular-fontawesome&#x27;;
 import { faPen,faTrash,faSquare } from &#x27;@fortawesome/free-solid-svg-icons&#x27;;
 import { faRectangleXmark } from &#x27;@fortawesome/free-regular-svg-icons&#x27;;
 
+
 import { MAT_DATE_FORMATS } from &#x27;@angular/material/core&#x27;;
 export const MY_DATE_FORMATS &#x3D; {
     parse: {
@@ -639,7 +647,9 @@ export const MY_DATE_FORMATS &#x3D; {
 
 
 import { peticiones_service } from &#x27;./servicios&#x27;;
-
+/**
+ * Interzas que define ls estructura de los datos a manejar
+ */
 export interface Personas {
   Id:number;
   Nombre:string;
@@ -713,7 +723,10 @@ export class PersonasComponent implements OnInit {
       this.filePath &#x3D; this.reader.result as string;
     }
   }
-  selectFile(event: any) { //Angular 11, for stricter type
+  /**
+ * @param {event} event  parametro para obtener el archivo seleconado a subir
+ */
+  selectFile(event: any) {
     if(!event.target.files[0] || event.target.files[0].length &#x3D;&#x3D; 0) {
       return;
     }
@@ -728,17 +741,25 @@ export class PersonasComponent implements OnInit {
     this.fileUpload &#x3D; event.target.files[0];
 
   }
-
+  /**
+   * solicita al servicio la lisa de los registros guardados
+   */
   getList(){
     this.objpeticiones_service.getListPersonas().subscribe((data)&#x3D;&gt;{
       this.dataSource &#x3D; new MatTableDataSource&lt;Personas&gt;(data);
       this.dataSource.sort &#x3D; this.sort;
     });
   }
+  /**
+ *Cierra los popup
+ */
   closeModal() {
     this.display &#x3D; &#x27;none&#x27;;
     this.displayRemove &#x3D; &#x27;none&#x27;;
   }
+  /**
+ * @param {object} row_obj  Recibe el nodo a editar para su actualizacion
+ */
   edit(row_obj:any){
     this.submitted &#x3D; false;
     this.editPersona &#x3D; true;
@@ -747,6 +768,10 @@ export class PersonasComponent implements OnInit {
     this.display &#x3D; &#x27;block&#x27;;
     this.filePath &#x3D; this.objpeticiones_service.getPath()+&#x27;/&#x27;+this.form_personas.value.Avatar;
   }
+
+  /**
+ * Abre el popup para un nuevo registro
+ */
   viewPop(){
     this.submitted &#x3D; false;
     this.form_personas.reset();
@@ -754,6 +779,9 @@ export class PersonasComponent implements OnInit {
     this.display &#x3D; &#x27;block&#x27;;
     this.filePath &#x3D; &quot;&quot;;
   }//Endfuncion
+  /**
+ * Accion para guardar los datos modificados, o generar un nuevo registro.
+ */
   saveNewPersona(){
     this.submitted &#x3D; true;
     if (this.form_personas.invalid) {return;}
@@ -763,38 +791,42 @@ export class PersonasComponent implements OnInit {
       this.objpeticiones_service.uploadFile(this.fileUpload!).subscribe((url)&#x3D;&gt;{
         if(typeof url[&#x27;body&#x27;] !&#x3D;&#x3D; &#x27;undefined&#x27; ){
           this.form_personas.patchValue({
-            Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, &#x27;yyyy-MM-dd&#x27;)
-          });
-          this.form_personas.patchValue({
             Avatar: url[&#x27;body&#x27;][&#x27;ruta&#x27;]
           });
-          let resource &#x3D; this.form_personas.value;
-          this.objpeticiones_service.updatePersona(resource.Id,resource).subscribe((result)&#x3D;&gt;{
-            this.dataSource.data[this.dataSource.data.findIndex(item &#x3D;&gt; item.Id &#x3D;&#x3D; result.Id)] &#x3D; result;
-            this.dataSource.data &#x3D; this.dataSource.data;
-          });
         }
-
+      }).add(()&#x3D;&gt;{
+        this.form_personas.patchValue({
+          Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, &#x27;yyyy-MM-dd&#x27;)
+        });
+        let resource &#x3D; this.form_personas.value;
+        this.objpeticiones_service.updatePersona(resource.Id,resource).subscribe((result)&#x3D;&gt;{
+          this.dataSource.data[this.dataSource.data.findIndex(item &#x3D;&gt; item.Id &#x3D;&#x3D; result.Id)] &#x3D; result;
+          this.dataSource.data &#x3D; this.dataSource.data;
+        });
       });
     }else{
       this.objpeticiones_service.uploadFile(this.fileUpload!).subscribe((url)&#x3D;&gt;{
         if(typeof url[&#x27;body&#x27;] !&#x3D;&#x3D; &#x27;undefined&#x27; ){
           this.form_personas.patchValue({
-            Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, &#x27;yyyy-MM-dd&#x27;)
-          });
-          this.form_personas.patchValue({
             Avatar: url[&#x27;body&#x27;][&#x27;ruta&#x27;]
           });
-          let resource &#x3D; this.form_personas.value;
-          this.objpeticiones_service.setNewPersona(resource).subscribe((result)&#x3D;&gt;{
-            data.push(result);
-            this.dataSource.data &#x3D; data;
-          });
         }
+      }).add(()&#x3D;&gt;{
+        this.form_personas.patchValue({
+          Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, &#x27;yyyy-MM-dd&#x27;)
+        });
+        let resource &#x3D; this.form_personas.value;
+        this.objpeticiones_service.setNewPersona(resource).subscribe((result)&#x3D;&gt;{
+          data.push(result);
+          this.dataSource.data &#x3D; data;
+        });
       });
     }
     this.display &#x3D; &#x27;none&#x27;;
   }
+  /**
+ * Accion que se ejecuta al confirmar la eliminacion del registro
+ */
   confirmRemovePersona(){
     this.objpeticiones_service.removePersona(this.form_personas.value.Id).subscribe((result)&#x3D;&gt;{
       this.dataSource.data &#x3D; this.dataSource.data.filter((value,key)&#x3D;&gt;{
@@ -805,6 +837,9 @@ export class PersonasComponent implements OnInit {
       this.form_personas.reset();
     });
   }
+  /**
+ * @param {object} row_obj  Levanta el popup para confirmar la eliminacion
+ */
   remove(row_obj:any){
     this.displayRemove &#x3D; &#x27;block&#x27;;
     this.nombreRemove &#x3D; row_obj;

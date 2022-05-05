@@ -15,6 +15,7 @@ import {FaIconLibrary} from '@fortawesome/angular-fontawesome';
 import { faPen,faTrash,faSquare } from '@fortawesome/free-solid-svg-icons';
 import { faRectangleXmark } from '@fortawesome/free-regular-svg-icons';
 
+
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 export const MY_DATE_FORMATS = {
     parse: {
@@ -32,7 +33,9 @@ export const MY_DATE_FORMATS = {
 
 
 import { peticiones_service } from './servicios';
-
+/**
+ * Interzas que define ls estructura de los datos a manejar
+ */
 export interface Personas {
   Id:number;
   Nombre:string;
@@ -106,7 +109,10 @@ export class PersonasComponent implements OnInit {
       this.filePath = this.reader.result as string;
     }
   }
-  selectFile(event: any) { //Angular 11, for stricter type
+  /**
+ * @param {event} event  parametro para obtener el archivo seleconado a subir
+ */
+  selectFile(event: any) {
     if(!event.target.files[0] || event.target.files[0].length == 0) {
       return;
     }
@@ -121,17 +127,25 @@ export class PersonasComponent implements OnInit {
     this.fileUpload = event.target.files[0];
 
   }
-
+  /**
+   * solicita al servicio la lisa de los registros guardados
+   */
   getList(){
     this.objpeticiones_service.getListPersonas().subscribe((data)=>{
       this.dataSource = new MatTableDataSource<Personas>(data);
       this.dataSource.sort = this.sort;
     });
   }
+  /**
+ *Cierra los popup
+ */
   closeModal() {
     this.display = 'none';
     this.displayRemove = 'none';
   }
+  /**
+ * @param {object} row_obj  Recibe el nodo a editar para su actualizacion
+ */
   edit(row_obj:any){
     this.submitted = false;
     this.editPersona = true;
@@ -140,6 +154,10 @@ export class PersonasComponent implements OnInit {
     this.display = 'block';
     this.filePath = this.objpeticiones_service.getPath()+'/'+this.form_personas.value.Avatar;
   }
+
+  /**
+ * Abre el popup para un nuevo registro
+ */
   viewPop(){
     this.submitted = false;
     this.form_personas.reset();
@@ -147,6 +165,9 @@ export class PersonasComponent implements OnInit {
     this.display = 'block';
     this.filePath = "";
   }//Endfuncion
+  /**
+ * Accion para guardar los datos modificados, o generar un nuevo registro.
+ */
   saveNewPersona(){
     this.submitted = true;
     if (this.form_personas.invalid) {return;}
@@ -156,38 +177,42 @@ export class PersonasComponent implements OnInit {
       this.objpeticiones_service.uploadFile(this.fileUpload!).subscribe((url)=>{
         if(typeof url['body'] !== 'undefined' ){
           this.form_personas.patchValue({
-            Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, 'yyyy-MM-dd')
-          });
-          this.form_personas.patchValue({
             Avatar: url['body']['ruta']
           });
-          let resource = this.form_personas.value;
-          this.objpeticiones_service.updatePersona(resource.Id,resource).subscribe((result)=>{
-            this.dataSource.data[this.dataSource.data.findIndex(item => item.Id == result.Id)] = result;
-            this.dataSource.data = this.dataSource.data;
-          });
         }
-
+      }).add(()=>{
+        this.form_personas.patchValue({
+          Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, 'yyyy-MM-dd')
+        });
+        let resource = this.form_personas.value;
+        this.objpeticiones_service.updatePersona(resource.Id,resource).subscribe((result)=>{
+          this.dataSource.data[this.dataSource.data.findIndex(item => item.Id == result.Id)] = result;
+          this.dataSource.data = this.dataSource.data;
+        });
       });
     }else{
       this.objpeticiones_service.uploadFile(this.fileUpload!).subscribe((url)=>{
         if(typeof url['body'] !== 'undefined' ){
           this.form_personas.patchValue({
-            Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, 'yyyy-MM-dd')
-          });
-          this.form_personas.patchValue({
             Avatar: url['body']['ruta']
           });
-          let resource = this.form_personas.value;
-          this.objpeticiones_service.setNewPersona(resource).subscribe((result)=>{
-            data.push(result);
-            this.dataSource.data = data;
-          });
         }
+      }).add(()=>{
+        this.form_personas.patchValue({
+          Fecha_Nacimiento: this.datePipe.transform(this.form_personas.value.Fecha_Nacimiento, 'yyyy-MM-dd')
+        });
+        let resource = this.form_personas.value;
+        this.objpeticiones_service.setNewPersona(resource).subscribe((result)=>{
+          data.push(result);
+          this.dataSource.data = data;
+        });
       });
     }
     this.display = 'none';
   }
+  /**
+ * Accion que se ejecuta al confirmar la eliminacion del registro
+ */
   confirmRemovePersona(){
     this.objpeticiones_service.removePersona(this.form_personas.value.Id).subscribe((result)=>{
       this.dataSource.data = this.dataSource.data.filter((value,key)=>{
@@ -198,6 +223,9 @@ export class PersonasComponent implements OnInit {
       this.form_personas.reset();
     });
   }
+  /**
+ * @param {object} row_obj  Levanta el popup para confirmar la eliminacion
+ */
   remove(row_obj:any){
     this.displayRemove = 'block';
     this.nombreRemove = row_obj;
